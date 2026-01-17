@@ -4,9 +4,9 @@ A professional, AI-powered Twitter bot for crypto institutional market analysis.
 
 ## 📋 What This Bot Does
 
-- **Scans news** every 8 hours from mainstream finance (Yahoo, CNBC) and crypto media (CoinDesk, The Block)
-- **Analyzes** using Claude-3.5-Sonnet with an institutional perspective
-- **Posts** 3 professional tweets per day automatically
+- **Scans news** every 24 hours from mainstream finance (CNBC) and crypto media (CoinDesk, The Block)
+- **Analyzes** using Deepseek-V3 with an institutional perspective
+- **Posts** 1 professional tweets per day automatically
 - **Prevents duplicates** using SQLite database tracking
 
 ## 🔑 Step 1: Get Your API Keys
