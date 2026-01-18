@@ -1,4 +1,7 @@
-"""Twitter poster module to publish tweets via Twitter API v2."""
+"""Twitter poster module to publish tweets via Twitter API v2.
+
+NOTE: tweepy.Client does NOT accept proxies argument - cloud deployment ready.
+"""
 
 import os
 import time
