@@ -130,3 +130,5 @@ class TwitterPoster:
         """
         logger.info("Twitter API client ready (credentials configured)")
         return True
+
+# Force Railway Rebuild
