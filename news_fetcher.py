@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 # STRICT 24-HOUR HARD FILTER - Prevents posting outdated news
 # ============================================================
 STRICT_24H_FILTER = True  # Set to False to disable (NOT recommended)
-STALE_YEAR_PATTERNS = [r'\b2024\b', r'\b2023\b', r'\b2022\b']  # Years to reject
+STALE_YEAR_PATTERNS = [r'\b2025\b', r'\b2024\b', r'\b2023\b', r'\b2022\b']  # Years to reject (current year is 2026)
 
 
 def filter_stale_articles(articles: List[Dict], max_age_hours: int = 24) -> List[Dict]:
