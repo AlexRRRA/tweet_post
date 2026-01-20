@@ -89,6 +89,12 @@ def clean_llm_response(text: str) -> str:
 # System prompt for AI headline curation
 CURATION_PROMPT = """You are a Crypto Fund Manager responsible for filtering news for your investment team.
 
+=== CRITICAL DATE CONTEXT ===
+Today is {current_date}. The current year is {current_year}.
+You must ONLY select news that was released in the last 24 hours.
+REJECT any headlines that reference events from 2024 or earlier as if they are current news.
+If a headline mentions "2024" or "2023", it is likely stale cached content - SKIP IT.
+
 Your job is to identify the most CRITICAL headlines for institutional investors.
 
 PRIORITY CATEGORIES (in order of importance):
@@ -166,11 +172,19 @@ Return ONLY the {top_k} IDs, separated by commas (e.g., 3, 7, 12, 23, 41):"""
         try:
             logger.info(f"AI curating {len(headlines)} headlines...")
 
+            # Inject current date into curation prompt to prevent selecting stale news
+            current_date = datetime.now().strftime("%A, %B %d, %Y")
+            current_year = datetime.now().year
+            dynamic_curation_prompt = CURATION_PROMPT.format(
+                current_date=current_date,
+                current_year=current_year
+            )
+
             response = self.client.chat.completions.create(
                 model=LLM_MODEL,
                 max_tokens=100,
                 messages=[
-                    {"role": "system", "content": CURATION_PROMPT},
+                    {"role": "system", "content": dynamic_curation_prompt},
                     {"role": "user", "content": user_prompt}
                 ]
             )
@@ -223,9 +237,19 @@ Return ONLY the {top_k} IDs, separated by commas (e.g., 3, 7, 12, 23, 41):"""
 
         # Inject current date into system prompt to prevent temporal hallucinations
         current_date = datetime.now().strftime("%A, %B %d, %Y")
-        date_context = f"""CRITICAL CONTEXT: Today is {current_date}.
-All analysis must align with this timeline. If the news mentions "this year", it means {datetime.now().year}.
-Do not reference {datetime.now().year - 2} or {datetime.now().year - 1} as the future.
+        current_year = datetime.now().year
+        date_context = f"""=== CRITICAL DATE CONTEXT (NON-NEGOTIABLE) ===
+
+Today is {current_date}. The current year is {current_year}.
+
+STRICT RULES:
+1. You must ONLY analyze news provided in the context that was released in the last 24 hours.
+2. Do NOT reference historical data from 2024 or 2023 as if it were current news.
+3. If the news mentions "this year", it means {current_year}.
+4. If any content seems to reference 2024 events as recent, IGNORE that content.
+5. All price references, market events, and analysis must be relevant to January {current_year}.
+
+The bot previously posted outdated 2024 news causing critical errors. You are the last line of defense.
 
 """
         dynamic_system_prompt = date_context + SYSTEM_PROMPT
